@@ -3,6 +3,11 @@
 Plugin Name: Editpress Paywall
 */
 
+
+require __DIR__ . '/vendor/autoload.php';
+use Auth0\SDK\Auth0;
+
+
 /*
  * Plugin constants
  */
@@ -38,5 +43,7 @@ class EditpressPaywall
  * Starts our plugin class, easy!
  */
 new EditpressPaywall();
+
+echo "test";
 
 ?>
