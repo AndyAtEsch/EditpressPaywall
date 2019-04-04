@@ -44,6 +44,6 @@ class EditpressPaywall
  */
 new EditpressPaywall();
 
-echo "test";
+echo EDITPAYWALL_URL;
 
 ?>
