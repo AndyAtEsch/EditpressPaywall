@@ -13,9 +13,9 @@ use Auth0\SDK\Auth0;
  */
 
 if(!defined('EDITPAYWALL_URL'))
-	define('EDITPAYWALL__URL', plugin_dir_url( __FILE__ ));
-if(!defined('EDITPAYWALL__PATH'))
-	define('EDITPAYWALL__PATH', plugin_dir_path( __FILE__ ));
+	define('EDITPAYWALL_URL', plugin_dir_url( __FILE__ ));
+if(!defined('EDITPAYWALL_PATH'))
+	define('EDITPAYWALL_PATH', plugin_dir_path( __FILE__ ));
  
 
 
@@ -44,6 +44,6 @@ class EditpressPaywall
  */
 new EditpressPaywall();
 
-echo EDITPAYWALL_URL;
+echo (EDITPAYWALL_URL);
 
 ?>
