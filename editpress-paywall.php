@@ -8,24 +8,11 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 */
 
-
 require __DIR__ . '/vendor/autoload.php';
-require __DIR__ .'/src/WP_Route.php';
-
-
-/* Set Plugins Route*/ 
-WP_Route::get('^/emptypage', function(){
-    echo'test';
- });
-
- WP_Route::get('/', function(){ return "Hello World.";});
-  
 
 
 use Auth0\SDK\Auth0;
 use josegonzalez\Dotenv\Loader;
-
-
 
 /*
  * Plugin constants
@@ -44,6 +31,15 @@ $Dotenv->parse()->putenv(true);
 // Get environment variables
 //echo 'My Auth0 domain is ' . getenv('AUTH0_DOMAIN');
 
+        
+$auth0 = new Auth0([
+    'domain' => getenv('AUTH0_DOMAIN'),
+    'client_id' => getenv('AUTH0_CLIENT_ID'),
+    'client_secret' => getenv('AUTH0_CLIENT_SECRET'),
+    'redirect_uri' => getenv('AUTH0_REDIRECT_URI'),
+    'scope' => 'openid',
+  ]);
+
 
     /**
  * Class EditpressPayWall
@@ -52,15 +48,22 @@ $Dotenv->parse()->putenv(true);
  */
 class EditpressPaywall{
 
+
+    /* Constructor 
+    *  Set Auth Connection
+    */ 
 	function __construct() {
 
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 
 		add_action( 'init', array( $this, 'rewrite' ) );
 		add_filter( 'query_vars', array( $this, 'query_vars' ) );
-		add_action( 'template_include', array( $this, 'change_template' ) );
+        add_action( 'template_include', array( $this, 'change_template' ) );
 
-	}
+  
+    }
+    
+  
 
 	function activate() {
 		set_transient( 'editpressPaywall_flush', 1, 60 );
@@ -112,6 +115,7 @@ class EditpressPaywall{
 		//Fall back to original template
 		return $template;
 		//require_once(__DIR__ . '/index.php');
+
 
 
 	}
