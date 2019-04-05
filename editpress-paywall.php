@@ -3,16 +3,29 @@
 Plugin Name: Editpress Paywall
 */
 
-
-require __DIR__ . '/vendor/autoload.php';
-
-use Auth0\SDK\Auth0;
-use josegonzalez\Dotenv\Loader;
-
 /*
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 */
+
+
+require __DIR__ . '/vendor/autoload.php';
+require __DIR__ .'/src/WP_Route.php';
+
+
+/* Set Plugins Route*/ 
+WP_Route::get('^/emptypage', function(){
+    echo'test';
+ });
+
+ WP_Route::get('/', function(){ return "Hello World.";});
+  
+
+
+use Auth0\SDK\Auth0;
+use josegonzalez\Dotenv\Loader;
+
+
 
 /*
  * Plugin constants
@@ -29,33 +42,85 @@ $Dotenv = new Loader(__DIR__ . '/.env');
 $Dotenv->parse()->putenv(true);
 
 // Get environment variables
-echo 'My Auth0 domain is ' . getenv('AUTH0_DOMAIN');
+//echo 'My Auth0 domain is ' . getenv('AUTH0_DOMAIN');
 
 
     /**
- * Class Feedier
+ * Class EditpressPayWall
  *
  * This class creates the option page and add the web app script
  */
-class EditpressPaywall
-{
- 
-    /**
-     * Feedier constructor.
-     *
-     * The main plugin actions registered for WordPress
-     */
-    public function __construct()
-    {
- 
-    }
- 
+class EditpressPaywall{
+
+	function __construct() {
+
+		register_activation_hook( __FILE__, array( $this, 'activate' ) );
+
+		add_action( 'init', array( $this, 'rewrite' ) );
+		add_filter( 'query_vars', array( $this, 'query_vars' ) );
+		add_action( 'template_include', array( $this, 'change_template' ) );
+
+	}
+
+	function activate() {
+		set_transient( 'editpressPaywall_flush', 1, 60 );
+	}
+
+	function rewrite() {
+		add_rewrite_endpoint( 'dump', EP_PERMALINK );
+		
+        add_rewrite_rule( '^login$', 'index.php?login=1', 'top' );
+        add_rewrite_rule( '^logout$', 'index.php?logout=1', 'top' );
+        add_rewrite_rule( '^profile$', 'index.php?profile=1', 'top' );
+
+		if(get_transient( 'editpressPaywall_flush' )) {
+			delete_transient( 'editpressPaywall_flush' );
+			flush_rewrite_rules();
+		}
+	}
+
+	function query_vars($vars) {
+        $vars[] = 'login';
+		$vars[] = 'logout';
+        $vars[] = 'profile';
+		return $vars;
+	}
+
+	function change_template( $template ) {
+
+        if( get_query_var( 'login', false ) !== false ) {
+			//Check plugin directory next
+			$newTemplate = plugin_dir_path( __FILE__ ) . 'templates/login.php';
+			if( file_exists( $newTemplate ) )
+				return $newTemplate;
+		}
+
+		if( get_query_var( 'logout', false ) !== false ) {
+			//Check plugin directory next
+			$newTemplate = plugin_dir_path( __FILE__ ) . 'templates/logout.php';
+			if( file_exists( $newTemplate ) )
+				return $newTemplate;
+		}
+
+		if( get_query_var( 'profile', false ) !== false ) {
+			//Check plugin directory next
+			$newTemplate = plugin_dir_path( __FILE__ ) . 'templates/profile.php';
+			if( file_exists( $newTemplate ) )
+				return $newTemplate;
+		}
+
+		//Fall back to original template
+		return $template;
+		//require_once(__DIR__ . '/index.php');
+
+
+	}
+
 }
- 
-/*
- * Starts our plugin class, easy!
- */
-new EditpressPaywall();
+
+new EditpressPaywall;
+
+
 
 
 
