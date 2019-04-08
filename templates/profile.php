@@ -20,6 +20,7 @@ $auth0 = new Auth0([
 */
   $userInfo = $auth0->getUser();
 
-  var_dump($userInfo);
+  ChargeBee_Environment::configure(getenv('CHARGEBEE_SITE'),getenv('CHARGEBEE_SITE_API_KEY'));
+
 
 ?>
