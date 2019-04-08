@@ -48,10 +48,6 @@ $auth0 = new Auth0([
 class EditpressPaywall{
 
 
-    /* Constructor 
-    *  Set Auth Connection
-    */ 
-    private $auth0_domain;
 
 
     static function generateAuth0Token(){
@@ -81,7 +77,18 @@ class EditpressPaywall{
         else return FALSE;
     }
 
-	function __construct() {
+
+
+    static function managementApiAuth(){
+        $token = EditpressPaywall::generateAuth0Token();
+        return new Management( $token, getenv('AUTH0_DOMAIN') );
+    }
+
+    /* Constructor
+*  Set Auth Connection
+*/
+
+    function __construct() {
 
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 
