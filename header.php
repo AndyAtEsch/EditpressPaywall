@@ -166,13 +166,13 @@ $connected = 0;
 
 
 if (!$userInfo) {
-  echo '<a href="/login.php">Login via AUTH0 //</a>';
+  echo '<a href="/login">Login via AUTH0 //</a>';
 
 } else {
     // User is authenticated
     // Say hello to $userInfo['name']
     // print logout button
-    echo '<a href="/profile.php">Profile AUTH0</a>';
+    echo '<a href="/profile">Profile AUTH0</a>';
     $connected = 1;
 }
  ?>
