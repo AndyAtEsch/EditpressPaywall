@@ -13,7 +13,9 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Auth0\SDK\Auth0;
 use josegonzalez\Dotenv\Loader;
-
+use Auth0\SDK\Store\SessionStore;
+use Auth0\SDK\API\Management;
+use Auth0\SDK\API\Authentication;
 /*
  * Plugin constants
  */
@@ -27,9 +29,6 @@ if(!defined('EDITPAYWALL_PATH'))
 */
 $Dotenv = new Loader(__DIR__ . '/.env');
 $Dotenv->parse()->putenv(true);
-
-// Get environment variables
-//echo 'My Auth0 domain is ' . getenv('AUTH0_DOMAIN');
 
         
 $auth0 = new Auth0([
@@ -52,6 +51,28 @@ class EditpressPaywall{
     /* Constructor 
     *  Set Auth Connection
     */ 
+    private $auth0_domain;
+
+
+    static function generateAuth0Token(){
+
+        // Generate Auth0 Token
+        $config = [
+            'client_secret' => getenv('AUTH0_CLIENT_SECRET'),
+            'client_id' => getenv('AUTH0_CLIENT_ID'),
+            'audience' => "https://".getenv('AUTH0_DOMAIN')."/api/v2/"
+          ];
+
+        //  var_dump($config);
+          var_dump(getenv('AUTH0_DOMAIN'));
+
+          $auth0_api = new Authentication(getenv('AUTH0_DOMAIN'));
+          $result = $auth0_api->client_credentials($config);
+
+          return $result["access_token"];
+    }
+
+
 	function __construct() {
 
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
@@ -59,8 +80,7 @@ class EditpressPaywall{
 		add_action( 'init', array( $this, 'rewrite' ) );
 		add_filter( 'query_vars', array( $this, 'query_vars' ) );
         add_action( 'template_include', array( $this, 'change_template' ) );
-
-  
+ 
     }
     
   
@@ -115,7 +135,6 @@ class EditpressPaywall{
 		//Fall back to original template
 		return $template;
 		//require_once(__DIR__ . '/index.php');
-
 
 
 	}
