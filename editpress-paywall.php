@@ -73,6 +73,14 @@ class EditpressPaywall{
     }
 
 
+    static function auth0UserIsConnected(){
+        $store = new SessionStore();
+        $user  = $store->get('user');
+
+        if ( $user ) return $user;
+        else return FALSE;
+    }
+
 	function __construct() {
 
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
