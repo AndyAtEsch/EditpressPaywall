@@ -5,10 +5,15 @@ Plugin Name: Editpress Paywall
 
 /*
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
-*/
+ini_set('display_errors', 1);*/
+
 
 require __DIR__ . '/vendor/autoload.php';
+
+/*
+ * Load ChargeBee functions
+ */
+include "functions.php";
 
 
 use Auth0\SDK\Auth0;
@@ -49,7 +54,9 @@ class EditpressPaywall{
 
 
 
-
+/* Static function to generate auth0 tokens
+ *
+ * */
     static function generateAuth0Token(){
 
         // Generate Auth0 Token
@@ -59,9 +66,6 @@ class EditpressPaywall{
             'audience' => "https://".getenv('AUTH0_DOMAIN')."/api/v2/"
           ];
 
-        //  var_dump($config);
-          var_dump(getenv('AUTH0_DOMAIN'));
-
           $auth0_api = new Authentication(getenv('AUTH0_DOMAIN'));
           $result = $auth0_api->client_credentials($config);
 
@@ -69,6 +73,11 @@ class EditpressPaywall{
     }
 
 
+
+
+    /*
+     * Static function to verify if a auth0 user is connected
+     */
     static function auth0UserIsConnected(){
         $store = new SessionStore();
         $user  = $store->get('user');
@@ -78,7 +87,9 @@ class EditpressPaywall{
     }
 
 
-
+    /*
+     * Static function to connect to the Management API Auth0
+     */
     static function managementApiAuth(){
         $token = EditpressPaywall::generateAuth0Token();
         return new Management( $token, getenv('AUTH0_DOMAIN') );
@@ -95,7 +106,7 @@ class EditpressPaywall{
 		add_action( 'init', array( $this, 'rewrite' ) );
 		add_filter( 'query_vars', array( $this, 'query_vars' ) );
         add_action( 'template_include', array( $this, 'change_template' ) );
- 
+
     }
     
   
