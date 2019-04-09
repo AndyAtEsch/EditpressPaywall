@@ -21,4 +21,3 @@ function getChargebeePortalSession($chargebee_id){
 
 }
 ?>
-
